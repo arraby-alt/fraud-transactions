@@ -2,4 +2,54 @@
 # Data files
 # ========================
 *.csv
+*.tsv
+*.parquet
+*.h5
+*.feather
 *.zip
+*.tar.gz
+
+# ========================
+# Models / outputs
+# ========================
+models/
+checkpoints/
+outputs/
+results/
+*.pkl
+*.joblib
+
+# ========================
+# Python
+# ========================
+__pycache__/
+*.pyc
+.venv/
+env/
+venv/
+
+# ========================
+# Jupyter
+# ========================
+.ipynb_checkpoints/
+
+# ========================
+# OS / Editor
+# ========================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ========================
+# Logs
+# ========================
+*.log
+logs/
+
+# ========================
+# Secrets
+# ========================
+.env
+*.key
+*.pem
