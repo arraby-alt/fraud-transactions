@@ -1,0 +1,120 @@
+def generate_eda_report_dropna_stratified(df, output_dir="EDA", sample_size=13_000_000):
+
+    os.makedirs(output_dir, exist_ok=True)
+
+    # -----------------------------
+    # CLEAN LABELLED DATA
+    # -----------------------------
+    df_labeled = df[df["fraud_flag"].notna()].copy()
+
+    # Ensure we don't sample more than available
+    df_labeled = df_labeled.sample(
+        n=min(len(df_labeled), sample_size),
+        random_state=42
+    )
+
+    df_fraud = df_labeled[df_labeled["fraud_flag"] == 1]
+    df_nonfraud = df_labeled[df_labeled["fraud_flag"] == 0]
+
+    # Guard against empty classes
+    if len(df_fraud) == 0 or len(df_nonfraud) == 0:
+        raise ValueError("One of the classes (fraud/non-fraud) is empty.")
+
+    n_sample = min(len(df_fraud), len(df_nonfraud))
+
+    df_nonfraud_sampled = df_nonfraud.sample(n=n_sample, random_state=42)
+    df_fraud_sampled = df_fraud.sample(n=n_sample, random_state=42)
+
+    df_sample = pd.concat([df_fraud_sampled, df_nonfraud_sampled])
+    df_sample = df_sample.sample(frac=1, random_state=42)
+
+    # -----------------------------
+    # COLUMN TYPES
+    # -----------------------------
+    numeric_cols = df_labeled.select_dtypes(include=np.number).columns.drop(
+        "fraud_flag", errors="ignore"
+    )
+    categorical_cols = df_labeled.select_dtypes(exclude=np.number).columns
+
+    report_lines = []
+    report_lines.append("<h1>EDA Report</h1>")
+
+    # -----------------------------
+    # NUMERICAL
+    # -----------------------------
+    report_lines.append("<h2>Numerical Features</h2>")
+
+    for col in numeric_cols:
+        try:
+            data = df_sample[[col, "fraud_flag"]].dropna()
+
+            if data.empty:
+                continue
+
+            fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+
+            axes[0].hist(
+                data[data["fraud_flag"] == 0][col],
+                bins=50
+            )
+            axes[0].set_title("Non-Fraud")
+
+            axes[1].hist(
+                data[data["fraud_flag"] == 1][col],
+                bins=50
+            )
+            axes[1].set_title("Fraud")
+
+            fig.suptitle(col)
+
+            file_path = os.path.join(output_dir, f"{col}.png")
+            plt.tight_layout()
+            plt.savefig(file_path)
+            plt.close()
+
+            report_lines.append(f"<h3>{col}</h3><img src='{col}.png'>")
+
+        except Exception:
+            continue
+
+    # -----------------------------
+    # CATEGORICAL
+    # -----------------------------
+    report_lines.append("<h2>Categorical Features</h2>")
+
+    for col in categorical_cols:
+        try:
+            tmp = df_sample[[col, "fraud_flag"]].dropna()
+
+            if tmp.empty:
+                continue
+
+            counts = tmp.groupby(col)["fraud_flag"].agg(["count", "sum"])
+            counts["fraud_rate"] = counts["sum"] / counts["count"]
+
+            top = counts.sort_values("fraud_rate", ascending=False).head(20)
+
+            if top.empty:
+                continue
+
+            ax = top["fraud_rate"].plot(kind="bar", figsize=(8, 4))
+            ax.set_title(f"{col} - Fraud Rate")
+
+            file_path = os.path.join(output_dir, f"{col}.png")
+            plt.tight_layout()
+            plt.savefig(file_path)
+            plt.close()
+
+            report_lines.append(f"<h3>{col}</h3><img src='{col}.png'>")
+
+        except Exception:
+            continue
+
+    # -----------------------------
+    # SAVE HTML
+    # -----------------------------
+    html_path = os.path.join(output_dir, "report.html")
+    with open(html_path, "w") as f:
+        f.write("\n".join(report_lines))
+
+    print(f"EDA report saved to {html_path}")
