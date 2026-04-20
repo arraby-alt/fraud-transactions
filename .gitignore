@@ -54,3 +54,6 @@ logs/
 .env
 *.key
 *.pem
+fraud_rate_map.html
+train_fraud_labels.json
+transaction_map.html
