@@ -1,19 +1,499 @@
-<h1>EDA Report</h1>
-<h2>Numerical Features</h2>
-<h3>id</h3><img src='id.png'>
-<h3>client_id</h3><img src='client_id.png'>
-<h3>card_id</h3><img src='card_id.png'>
-<h3>amount</h3><img src='amount.png'>
-<h3>use_chip</h3><img src='use_chip.png'>
-<h3>merchant_id</h3><img src='merchant_id.png'>
-<h3>zip</h3><img src='zip.png'>
-<h3>mcc</h3><img src='mcc.png'>
-<h3>is_error</h3><img src='is_error.png'>
-<h3>is_online</h3><img src='is_online.png'>
-<h3>is_usa</h3><img src='is_usa.png'>
-<h2>Categorical Features</h2>
-<h3>datetime_transaction</h3><img src='datetime_transaction.png'>
-<h3>merchant_city</h3><img src='merchant_city.png'>
-<h3>merchant_state</h3><img src='merchant_state.png'>
-<h3>errors</h3><img src='errors.png'>
-<h3>fraud</h3><img src='fraud.png'>
+<html><body>
+<h1>Fraud EDA Report</h1>
+<h2>Dataset Summary</h2>
+
+    <ul>
+    <li>Total transactions: 13,305,915</li>
+    <li>Labelled transactions: 8,914,963</li>
+    <li>Unlabelled transactions: 4,390,952</li>
+    <li>Fraud transactions: 13,332</li>
+    <li>Non-fraud transactions: 8,901,631</li>
+    <li>Actual labelled fraud rate: 0.1495%</li>
+    <li>Natural EDA sample: 8,914,963</li>
+    <li>Balanced EDA sample: 26,664</li>
+    </ul>
+    
+<h2>Column Classification</h2>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>column</th>
+      <th>dtype</th>
+      <th>n_unique</th>
+      <th>unique_pct</th>
+      <th>classification</th>
+      <th>model_usable</th>
+      <th>reason</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>id</td>
+      <td>int64</td>
+      <td>13305915</td>
+      <td>1.000000e+00</td>
+      <td>identifier</td>
+      <td>False</td>
+      <td>Raw identifier; retained for linking/investigation</td>
+    </tr>
+    <tr>
+      <td>datetime_transaction</td>
+      <td>datetime64[ns]</td>
+      <td>4136496</td>
+      <td>3.108765e-01</td>
+      <td>datetime</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>client_id</td>
+      <td>int64</td>
+      <td>1219</td>
+      <td>9.161339e-05</td>
+      <td>categorical</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>card_id</td>
+      <td>int64</td>
+      <td>4071</td>
+      <td>3.059542e-04</td>
+      <td>categorical</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>amount</td>
+      <td>float64</td>
+      <td>81160</td>
+      <td>6.099543e-03</td>
+      <td>continuous</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>use_chip</td>
+      <td>int64</td>
+      <td>3</td>
+      <td>2.254636e-07</td>
+      <td>categorical</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>merchant_id</td>
+      <td>int64</td>
+      <td>74831</td>
+      <td>5.623890e-03</td>
+      <td>categorical</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>merchant_city</td>
+      <td>object</td>
+      <td>12492</td>
+      <td>9.388306e-04</td>
+      <td>categorical</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>merchant_state</td>
+      <td>object</td>
+      <td>200</td>
+      <td>1.503091e-05</td>
+      <td>categorical</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>zip</td>
+      <td>float64</td>
+      <td>25257</td>
+      <td>1.898178e-03</td>
+      <td>categorical</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>mcc</td>
+      <td>int64</td>
+      <td>109</td>
+      <td>8.191846e-06</td>
+      <td>categorical</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>errors</td>
+      <td>object</td>
+      <td>23</td>
+      <td>1.728555e-06</td>
+      <td>post_transaction</td>
+      <td>False</td>
+      <td>Not available at transaction time</td>
+    </tr>
+    <tr>
+      <td>is_error</td>
+      <td>int64</td>
+      <td>2</td>
+      <td>1.503091e-07</td>
+      <td>post_transaction</td>
+      <td>False</td>
+      <td>Not available at transaction time</td>
+    </tr>
+    <tr>
+      <td>is_online</td>
+      <td>int64</td>
+      <td>2</td>
+      <td>1.503091e-07</td>
+      <td>binary</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>is_usa</td>
+      <td>int64</td>
+      <td>2</td>
+      <td>1.503091e-07</td>
+      <td>binary</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>fraud</td>
+      <td>object</td>
+      <td>2</td>
+      <td>1.503091e-07</td>
+      <td>label_source</td>
+      <td>False</td>
+      <td>Raw fraud label</td>
+    </tr>
+    <tr>
+      <td>fraud_flag</td>
+      <td>Int64</td>
+      <td>2</td>
+      <td>1.503091e-07</td>
+      <td>target</td>
+      <td>False</td>
+      <td>Target variable</td>
+    </tr>
+    <tr>
+      <td>hour</td>
+      <td>int32</td>
+      <td>24</td>
+      <td>1.803709e-06</td>
+      <td>temporal</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>day_of_year</td>
+      <td>int32</td>
+      <td>366</td>
+      <td>2.750656e-05</td>
+      <td>temporal</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>week</td>
+      <td>int64</td>
+      <td>53</td>
+      <td>3.983191e-06</td>
+      <td>temporal</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>day_of_week</td>
+      <td>int32</td>
+      <td>7</td>
+      <td>5.260818e-07</td>
+      <td>temporal</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>day_of_month</td>
+      <td>int32</td>
+      <td>31</td>
+      <td>2.329791e-06</td>
+      <td>temporal</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>is_month_end</td>
+      <td>int8</td>
+      <td>2</td>
+      <td>1.503091e-07</td>
+      <td>temporal</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>is_month_start</td>
+      <td>int8</td>
+      <td>2</td>
+      <td>1.503091e-07</td>
+      <td>temporal</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>weekday</td>
+      <td>int32</td>
+      <td>7</td>
+      <td>5.260818e-07</td>
+      <td>categorical_numeric</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>month</td>
+      <td>int32</td>
+      <td>12</td>
+      <td>9.018546e-07</td>
+      <td>temporal</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>year</td>
+      <td>int32</td>
+      <td>10</td>
+      <td>7.515455e-07</td>
+      <td>temporal</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>weekend</td>
+      <td>int8</td>
+      <td>2</td>
+      <td>1.503091e-07</td>
+      <td>temporal</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>hour_sin</td>
+      <td>float64</td>
+      <td>21</td>
+      <td>1.578245e-06</td>
+      <td>continuous</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>hour_cos</td>
+      <td>float64</td>
+      <td>22</td>
+      <td>1.653400e-06</td>
+      <td>continuous</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>weekday_sin</td>
+      <td>float64</td>
+      <td>7</td>
+      <td>5.260818e-07</td>
+      <td>categorical_numeric</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>weekday_cos</td>
+      <td>float64</td>
+      <td>7</td>
+      <td>5.260818e-07</td>
+      <td>categorical_numeric</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>month_sin</td>
+      <td>float64</td>
+      <td>11</td>
+      <td>8.267000e-07</td>
+      <td>continuous</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>month_cos</td>
+      <td>float64</td>
+      <td>11</td>
+      <td>8.267000e-07</td>
+      <td>continuous</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>zip_missing</td>
+      <td>int8</td>
+      <td>1</td>
+      <td>7.515455e-08</td>
+      <td>categorical_numeric</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+    <tr>
+      <td>amount_log</td>
+      <td>float64</td>
+      <td>80563</td>
+      <td>6.054676e-03</td>
+      <td>continuous</td>
+      <td>True</td>
+      <td>Available at transaction time</td>
+    </tr>
+  </tbody>
+</table>
+<h2>Model-Eligible Features</h2>
+<ul>
+<li>datetime_transaction</li>
+<li>client_id</li>
+<li>card_id</li>
+<li>amount</li>
+<li>use_chip</li>
+<li>merchant_id</li>
+<li>merchant_city</li>
+<li>merchant_state</li>
+<li>zip</li>
+<li>mcc</li>
+<li>is_online</li>
+<li>is_usa</li>
+<li>hour</li>
+<li>day_of_year</li>
+<li>week</li>
+<li>day_of_week</li>
+<li>day_of_month</li>
+<li>is_month_end</li>
+<li>is_month_start</li>
+<li>weekday</li>
+<li>month</li>
+<li>year</li>
+<li>weekend</li>
+<li>hour_sin</li>
+<li>hour_cos</li>
+<li>weekday_sin</li>
+<li>weekday_cos</li>
+<li>month_sin</li>
+<li>month_cos</li>
+<li>zip_missing</li>
+<li>amount_log</li>
+</ul>
+<h2>Categorical Features - Fraud Rate</h2>
+<h3>client_id</h3><img src='client_id_fraud_rate.png'>
+<h3>card_id</h3><img src='card_id_fraud_rate.png'>
+<h3>use_chip</h3><img src='use_chip_fraud_rate.png'>
+<h3>merchant_id</h3><img src='merchant_id_fraud_rate.png'>
+<h3>merchant_city</h3><img src='merchant_city_fraud_rate.png'>
+<h3>merchant_state</h3><img src='merchant_state_fraud_rate.png'>
+<h3>zip</h3><img src='zip_fraud_rate.png'>
+<h3>mcc</h3><img src='mcc_fraud_rate.png'>
+<h3>is_online</h3><img src='is_online_fraud_rate.png'>
+<h3>is_usa</h3><img src='is_usa_fraud_rate.png'>
+<h3>hour</h3><img src='hour_fraud_rate.png'>
+<h3>day_of_year</h3><img src='day_of_year_fraud_rate.png'>
+<h3>week</h3><img src='week_fraud_rate.png'>
+<h3>day_of_week</h3><img src='day_of_week_fraud_rate.png'>
+<h3>day_of_month</h3><img src='day_of_month_fraud_rate.png'>
+<h3>is_month_end</h3><img src='is_month_end_fraud_rate.png'>
+<h3>is_month_start</h3><img src='is_month_start_fraud_rate.png'>
+<h3>weekday</h3><img src='weekday_fraud_rate.png'>
+<h3>month</h3><img src='month_fraud_rate.png'>
+<h3>year</h3><img src='year_fraud_rate.png'>
+<h3>weekend</h3><img src='weekend_fraud_rate.png'>
+<h3>weekday_sin</h3><img src='weekday_sin_fraud_rate.png'>
+<h3>weekday_cos</h3><img src='weekday_cos_fraud_rate.png'>
+<h3>zip_missing</h3><img src='zip_missing_fraud_rate.png'>
+<h2>Fraud vs Non-Fraud Feature Comparison</h2>
+<h3>client_id</h3><img src='client_id_comparison.png'>
+<h3>card_id</h3><img src='card_id_comparison.png'>
+<h3>use_chip</h3><img src='use_chip_comparison.png'>
+<h3>merchant_id</h3><img src='merchant_id_comparison.png'>
+<h3>merchant_city</h3><img src='merchant_city_comparison.png'>
+<h3>merchant_state</h3><img src='merchant_state_comparison.png'>
+<h3>zip</h3><img src='zip_comparison.png'>
+<h3>mcc</h3><img src='mcc_comparison.png'>
+<h3>is_online</h3><img src='is_online_comparison.png'>
+<h3>is_usa</h3><img src='is_usa_comparison.png'>
+<h3>hour</h3><img src='hour_comparison.png'>
+<h3>day_of_year</h3><img src='day_of_year_comparison.png'>
+<h3>week</h3><img src='week_comparison.png'>
+<h3>day_of_week</h3><img src='day_of_week_comparison.png'>
+<h3>day_of_month</h3><img src='day_of_month_comparison.png'>
+<h3>is_month_end</h3><img src='is_month_end_comparison.png'>
+<h3>is_month_start</h3><img src='is_month_start_comparison.png'>
+<h3>weekday</h3><img src='weekday_comparison.png'>
+<h3>month</h3><img src='month_comparison.png'>
+<h3>year</h3><img src='year_comparison.png'>
+<h3>weekend</h3><img src='weekend_comparison.png'>
+<h3>weekday_sin</h3><img src='weekday_sin_comparison.png'>
+<h3>weekday_cos</h3><img src='weekday_cos_comparison.png'>
+<h3>zip_missing</h3><img src='zip_missing_comparison.png'>
+<h2>Temporal Fraud Analysis</h2>
+<h3>Fraud by hour</h3><img src='fraud_by_hour.png'>
+<h3>Fraud by day_of_week</h3><img src='fraud_by_day_of_week.png'>
+<h3>Fraud by month</h3><img src='fraud_by_month.png'>
+<h3>Fraud by weekend</h3><img src='fraud_by_weekend.png'>
+<h3>Fraud Over Time</h3><img src='fraud_over_time.png'>
+<h2>Missing Value Analysis</h2>
+<p>No missing values.</p>
+<h2>Amount Analysis</h2>
+<h3>Amount Quantiles</h3>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>0.01</th>
+      <th>0.05</th>
+      <th>0.25</th>
+      <th>0.5</th>
+      <th>0.75</th>
+      <th>0.95</th>
+      <th>0.99</th>
+    </tr>
+    <tr>
+      <th>fraud_flag</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>-97.0</td>
+      <td>-50.00</td>
+      <td>9.030</td>
+      <td>28.770</td>
+      <td>64.0000</td>
+      <td>145.1745</td>
+      <td>320.1242</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>-380.0</td>
+      <td>0.28</td>
+      <td>17.835</td>
+      <td>69.975</td>
+      <td>148.4925</td>
+      <td>403.0000</td>
+      <td>868.0987</td>
+    </tr>
+  </tbody>
+</table>
+<h3>Amount Boxplot</h3><img src='amount_boxplot.png'>
+<h3>Amount Violin Plot</h3><img src='amount_violin.png'>
+<h3>Log Amount Boxplot</h3><img src='amount_log_boxplot.png'>
+</body></html>
